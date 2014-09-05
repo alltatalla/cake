@@ -34,10 +34,14 @@ angular.module('cakeApp')
         gameLoop();
     };
 
-    var arrayRemoveIf = function(array, pred) {
+    var arrayRemoveIf = function(array, pred, onRemoved) {
         var i = array.length;
         while (i--) {
             if (pred(array[i])) {
+                if (onRemoved !== undefined) {
+                    onRemoved(array[i]);
+                }
+
                 array.splice(i, 1);
             }
         }
@@ -61,6 +65,8 @@ angular.module('cakeApp')
         var FOE_PADDING = 20; // px
         var MIN_FOE_TIME = 0.5; // s
         var COLLISION_DIST = 20; // px
+        var FOE_LIFETIME = 5;
+        var CAKE_LIFETIME = 0.5;
 
         console.log('Update!');
         gameTime += dt;
@@ -87,8 +93,13 @@ angular.module('cakeApp')
         arrayRemoveIf(foes, function(v) { return v.collision === true; });
         arrayRemoveIf(cakes, function(v) { return v.collision === true; });
 
-        // TODO: Remove old cakes
-        // TODO: Remove surviving foes and take a hit
+        // Remove old cakes
+        arrayRemoveIf(cakes, function(v) { return (gameTime - v.launchTime) > CAKE_LIFETIME; });
+
+        // Remove surviving foes
+        arrayRemoveIf(foes,
+            function(v) { return (gameTime - v.createdTime) > FOE_LIFETIME; },
+            function(v) { power -= 1; });
 
         // TODO: Check termination
 
@@ -100,8 +111,8 @@ angular.module('cakeApp')
             var y = Math.random() * (canvas.height - 2.0 * FOE_PADDING) + FOE_PADDING;
             var newPos = {x: x, y: y};
 
-            // Don't add on top of another foe
-            if (!arrayCollision(foes, newPos, COLLISION_DIST)) {
+            // Don't add in the score text area and don't add on top of another foe
+            if ((x > 100 || y > 70) && !arrayCollision(foes, newPos, COLLISION_DIST)) {
                 foes.push({pos: newPos, createdTime: gameTime});
             }
         }
@@ -135,7 +146,10 @@ angular.module('cakeApp')
         // Score
         context.font = '18pt Calibri';
         context.fillStyle = 'black';
-        context.fillText('Poäng: ' + score, 10, 25);
+        context.fillText('Poäng:', 10, 25);
+        context.fillText(score.toString(), 90, 25);
+        context.fillText('Kraft:', 10, 50);
+        context.fillText(power.toString(), 90, 50);
     };
 
     // The main game loop
