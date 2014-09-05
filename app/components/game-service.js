@@ -66,10 +66,10 @@ angular.module('cakeApp')
       var MIN_FOE_TIME = 0.5; // s
       var COLLISION_DIST = 20; // px
       var FOE_LIFETIME = 4.0; // s
+      var FOE_STRIKE_TIME = 1.0; // s
       var CAKE_LIFETIME = 0.5; // s
       var FOE_CAKED_TIME = 0.5; // s
 
-      console.log('Update!');
       gameTime += dt;
 
       // Process user input
@@ -91,6 +91,15 @@ angular.module('cakeApp')
         }
       }
 
+      // Foe strikes you
+      for (var i = 0; i < foes.length; ++i) {
+        if (foes[i].collision !== true && foes[i].strike !== true &&
+            (gameTime - foes[i].createdTime) > FOE_LIFETIME) {
+          foes[i].strike = true;
+          power -= 1;
+        }
+      }
+
       // Remove the colided objects
       arrayRemoveIf(foes, function(v) {
         return v.collision === true && (gameTime - v.collisionTime) > FOE_CAKED_TIME;
@@ -100,10 +109,10 @@ angular.module('cakeApp')
       // Remove old cakes
       arrayRemoveIf(cakes, function(v) { return (gameTime - v.launchTime) > CAKE_LIFETIME; });
 
-      // Remove surviving foes
-      arrayRemoveIf(foes,
-                    function(v) { return (gameTime - v.createdTime) > FOE_LIFETIME; },
-                    function(v) { power -= 1; });
+      // Remove surviving (striking) foes
+      arrayRemoveIf(foes, function(v) {
+        return (gameTime - v.createdTime) > (FOE_LIFETIME + FOE_STRIKE_TIME);
+      });
 
       // Check termination
       if (power <= 0) {
@@ -145,6 +154,7 @@ angular.module('cakeApp')
       var bgImg = resources.get('play/img/bg.png');
       var foeImg = resources.get('play/img/foe.png');
       var foeCakedImg = resources.get('play/img/foe-caked.png');
+      var foeStrikeImg = resources.get('play/img/foe-strike.png');
       var cakeImg = resources.get('play/img/cake.png');
 
       // Background (allways re-paint everything)
@@ -155,7 +165,10 @@ angular.module('cakeApp')
         var imgX = foes[i].pos.x - foeImg.width / 2.0;
         var imgY = foes[i].pos.y - foeImg.height / 2.0;
 
-        if (foes[i].collision === true) {
+        if (foes[i].strike === true) {
+          context.drawImage(foeStrikeImg, imgX, imgY);
+        }
+        else if (foes[i].collision === true) {
           context.drawImage(foeCakedImg, imgX, imgY);
         }
         else {
@@ -216,6 +229,7 @@ angular.module('cakeApp')
       'play/img/gameover.png',
       'play/img/cake.png',
       'play/img/foe-caked.png',
+      'play/img/foe-strike.png',
       'play/img/foe.png'
     ]);
     resources.onReady(function() { reset(); });
