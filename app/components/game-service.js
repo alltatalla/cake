@@ -65,6 +65,7 @@ angular.module('cakeApp')
       var FOE_PADDING = 20; // px
       var MIN_FOE_TIME = 0.5; // s
       var COLLISION_DIST = 20; // px
+      var CAT_LIFETIME = 4.0; // s
       var FOE_LIFETIME = 4.0; // s
       var FOE_STRIKE_TIME = 1.0; // s
       var CAKE_LIFETIME = 0.5; // s
@@ -86,7 +87,12 @@ angular.module('cakeApp')
             cakes[ci].collision = true;
             foes[fi].collision = true;
             foes[fi].collisionTime = gameTime;
-            score += 1;
+            if (foes[fi].type === 'foe') {
+              score += 1;
+            }
+            else if (foes[fi].type === 'cat') {
+              score = Math.floor(score / 2);
+            }
           }
         }
       }
@@ -111,7 +117,12 @@ angular.module('cakeApp')
 
       // Remove surviving (striking) foes
       arrayRemoveIf(foes, function(v) {
-        return (gameTime - v.createdTime) > (FOE_LIFETIME + FOE_STRIKE_TIME);
+        return v.type === 'foe' && (gameTime - v.createdTime) > (FOE_LIFETIME + FOE_STRIKE_TIME);
+      });
+
+      // Remove surviving cats
+      arrayRemoveIf(foes, function(v) {
+        return v.type === 'cat' && (gameTime - v.createdTime) > CAT_LIFETIME;
       });
 
       // Check termination
@@ -130,9 +141,11 @@ angular.module('cakeApp')
         var i = Math.floor(Math.random() * ENEMY_POS.length);
         var newPos = ENEMY_POS[i];
 
+        var type = Math.random() < 0.1 ? 'cat' : 'foe';
+
         // Don't add in the score text area and don't add on top of another foe
         if (!arrayCollision(foes, newPos, COLLISION_DIST)) {
-          foes.push({pos: newPos, createdTime: gameTime});
+          foes.push({pos: newPos, createdTime: gameTime, type: type});
         }
       }
     };
@@ -152,6 +165,8 @@ angular.module('cakeApp')
       }
 
       var bgImg = resources.get('play/img/bg.png');
+      var catImg = resources.get('play/img/cat.png');
+      var catCakedImg = resources.get('play/img/cat-caked.png');
       var foeImg = resources.get('play/img/foe.png');
       var foeCakedImg = resources.get('play/img/foe-caked.png');
       var foeStrikeImg = resources.get('play/img/foe-strike.png');
@@ -165,14 +180,24 @@ angular.module('cakeApp')
         var imgX = foes[i].pos.x - foeImg.width / 2.0;
         var imgY = foes[i].pos.y - foeImg.height / 2.0;
 
-        if (foes[i].strike === true) {
-          context.drawImage(foeStrikeImg, imgX, imgY);
+        if (foes[i].type === 'foe') {
+          if (foes[i].strike === true) {
+            context.drawImage(foeStrikeImg, imgX, imgY);
+          }
+          else if (foes[i].collision === true) {
+            context.drawImage(foeCakedImg, imgX, imgY);
+          }
+          else {
+            context.drawImage(foeImg, imgX, imgY);
+          }
         }
-        else if (foes[i].collision === true) {
-          context.drawImage(foeCakedImg, imgX, imgY);
-        }
-        else {
-          context.drawImage(foeImg, imgX, imgY);
+        else if (foes[i].type === 'cat') {
+          if (foes[i].collision === true) {
+            context.drawImage(catCakedImg, imgX, imgY);
+          }
+          else {
+            context.drawImage(catImg, imgX, imgY);
+          }
         }
       }
 
@@ -230,7 +255,9 @@ angular.module('cakeApp')
       'play/img/cake.png',
       'play/img/foe-caked.png',
       'play/img/foe-strike.png',
-      'play/img/foe.png'
+      'play/img/foe.png',
+      'play/img/cat.png',
+      'play/img/cat-caked.png'
     ]);
     resources.onReady(function() { reset(); });
 
