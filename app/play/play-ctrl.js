@@ -2,14 +2,13 @@
 
 angular.module('cakeApp')
   .controller('PlayCtrl', function ($scope, game) {
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
 
     $scope.ctrlButton = 'Spela';
     if (game.state() !== 'loading') {
       game.reset();
     }
-
-    var canvas = document.getElementById('canvas');
-    var context = canvas.getContext('2d');
 
     function getMousePos(canvas, e) {
       var rect = canvas.getBoundingClientRect();
@@ -31,6 +30,14 @@ angular.module('cakeApp')
     context.globalAlpha = 1.0;
     context.beginPath();
 
+    // The idle canvas background
+    var img = new Image();
+    img.onload = function() { drawStartImg(); };
+    img.src = 'play/img/start.png';
+    var drawStartImg = function() {
+      context.drawImage(img, 0, 0);
+    }
+
     $scope.playCtrl = function() {
       if (game.state() === 'idle') {
         $scope.ctrlButton = 'Tillbaka';
@@ -39,8 +46,7 @@ angular.module('cakeApp')
       else if (game.state() === 'running' || game.state() === 'game over') {
         $scope.ctrlButton = 'Spela';
         game.reset();
-        context.fillStyle = 'white';
-        context.fillRect(0, 0, canvas.width, canvas.height);
+        drawStartImg();
       }
     };
   });
