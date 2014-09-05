@@ -4,7 +4,9 @@ angular.module('cakeApp')
   .controller('PlayCtrl', function ($scope, game) {
 
     $scope.ctrlButton = 'Spela';
-    game.reset();
+    if (game.state() !== 'loading') {
+      game.reset();
+    }
 
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
