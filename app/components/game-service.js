@@ -6,7 +6,11 @@ angular.module('cakeApp')
     // Initial state while resources are loading
     // 'loading' -> 'idle' -> 'running' -> 'idle' | 'game over' | 'win' 
     var state = 'loading';
-    var foes, cakes, clicks, lastTime, lastFoe, gameTime, score;
+    var foes, lastFoe;
+    var cakes;
+    var clicks;
+    var lastTime, gameTime;
+    var score, power;
     var cvs;
 
     // After loading resources. Transition to a ready state.
@@ -18,6 +22,7 @@ angular.module('cakeApp')
         gameTime = 0;
         lastFoe = 0;
         score = 0;
+        power = 3;
         lastTime = Date.now();
     };
 
@@ -29,10 +34,33 @@ angular.module('cakeApp')
         gameLoop();
     };
 
+    var arrayRemoveIf = function(array, pred) {
+        var i = array.length;
+        while (i--) {
+            if (pred(array[i])) {
+                array.splice(i, 1);
+            }
+        }
+    };
+
+    var collision = function(pos1, pos2, dist) {
+        return Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2) < Math.pow(dist, 2);
+    };
+
+    var arrayCollision = function(array, pos, dist) {
+        for (var i = 0; i < array.length; ++i) {
+            if (collision(array[i].pos, pos, dist)) {
+                return true;
+            }
+        }
+        return false;
+    };
+
     // Game logic
     var updateGameState = function (dt) {
         var FOE_PADDING = 20; // px
         var MIN_FOE_TIME = 0.5; // s
+        var COLLISION_DIST = 20; // px
 
         console.log('Update!');
         gameTime += dt;
@@ -40,10 +68,27 @@ angular.module('cakeApp')
         // Process user input
         while(clicks.length){
             var pos = clicks.pop();
-            cakes.push({pos: pos});
+            cakes.push({pos: pos, launchTime: gameTime, collision: false});
         }
 
-        // TODO: Collision detection
+        // Collision detection
+        for (var ci = 0; ci < cakes.length; ++ci) {
+            for (var fi = 0; fi < foes.length; ++fi) {
+                if (collision(cakes[ci].pos, foes[fi].pos, COLLISION_DIST)) {
+                    console.log('Collision');
+                    cakes[ci].collision = true;
+                    foes[fi].collision = true;
+                    score += 1;
+                }
+            }
+        }
+
+        // Remove the colided objects
+        arrayRemoveIf(foes, function(v) { return v.collision === true; });
+        arrayRemoveIf(cakes, function(v) { return v.collision === true; });
+
+        // TODO: Remove old cakes
+        // TODO: Remove surviving foes and take a hit
 
         // TODO: Check termination
 
@@ -53,7 +98,12 @@ angular.module('cakeApp')
             console.log("Adding foe");
             var x = Math.random() * (canvas.width - 2.0 * FOE_PADDING) + FOE_PADDING;
             var y = Math.random() * (canvas.height - 2.0 * FOE_PADDING) + FOE_PADDING;
-            foes.push({pos: {x: x, y: y}});
+            var newPos = {x: x, y: y};
+
+            // Don't add on top of another foe
+            if (!arrayCollision(foes, newPos, COLLISION_DIST)) {
+                foes.push({pos: newPos, createdTime: gameTime});
+            }
         }
     };
 
