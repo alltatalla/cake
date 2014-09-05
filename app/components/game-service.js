@@ -135,6 +135,10 @@ angular.module('cakeApp')
       if (state === 'game over') {
         var gameOverImg = resources.get('play/img/gameover.png');
         context.drawImage(gameOverImg, 0, 0);
+
+        context.font = '18pt Calibri';
+        context.fillStyle = 'black';
+        context.fillText('Slutpoäng: ' + score.toString(), 240, 200);
         return;
       }
 
