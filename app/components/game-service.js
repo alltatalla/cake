@@ -52,6 +52,11 @@ angular.module('cakeApp')
 
     // The main game loop
     var gameLoop = function () {
+        if (state !== 'running') {
+            // Short circuit to prevent running the queued loop after reset
+            return;
+        }
+
         var now = Date.now();
         var dt = (now - lastTime) / 1000.0;
 
@@ -70,6 +75,10 @@ angular.module('cakeApp')
         foes.push({'x': x, 'y': y});
     };
 
+    var getState = function() {
+        return state;
+    };
+
     // Load images
     resources.load([
         'play/img/bg.png',
@@ -81,7 +90,7 @@ angular.module('cakeApp')
     return {
         start: start,
         reset: reset,
-        state: state,
+        state: getState,
         click: click 
     };
 

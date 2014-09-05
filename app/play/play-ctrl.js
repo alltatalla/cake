@@ -3,6 +3,8 @@
 angular.module('cakeApp')
   .controller('PlayCtrl', function ($scope, game) {
 
+    $scope.ctrlButton = 'Spela!';
+
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
 
@@ -26,7 +28,16 @@ angular.module('cakeApp')
     context.globalAlpha = 1.0;
     context.beginPath();
 
-    $scope.start = function() {
-        game.start(canvas);
+    $scope.playCtrl = function() {
+        if (game.state() === 'idle') {
+            $scope.ctrlButton = 'Tillbaka';
+            game.start(canvas);
+        }
+        else if (game.state() === 'running') {
+            $scope.ctrlButton = 'Spela!';
+            game.reset();
+            context.fillStyle = 'white';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+        }
     };
 });
