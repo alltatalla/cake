@@ -6,13 +6,18 @@ angular.module('cakeApp')
     // Initial state while resources are loading
     // 'loading' -> 'idle' -> 'running' -> 'idle' | 'game over' | 'win' 
     var state = 'loading';
-    var foes, lastTime;
+    var foes, cakes, clicks, lastTime, lastFoe, gameTime, score;
     var cvs;
 
     // After loading resources. Transition to a ready state.
     var reset = function() {
         state = 'idle';
         foes = [];
+        clicks = []; // unprocessed user input
+        cakes = [];
+        gameTime = 0;
+        lastFoe = 0;
+        score = 0;
         lastTime = Date.now();
     };
 
@@ -20,13 +25,36 @@ angular.module('cakeApp')
     var start = function (canvas) {
         reset();
         cvs = canvas;
-        state = 'running'; 
+        state = 'running';
         gameLoop();
     };
 
     // Game logic
     var updateGameState = function (dt) {
+        var FOE_PADDING = 20; // px
+        var MIN_FOE_TIME = 0.5; // s
+
         console.log('Update!');
+        gameTime += dt;
+
+        // Process user input
+        while(clicks.length){
+            var pos = clicks.pop();
+            cakes.push({pos: pos});
+        }
+
+        // TODO: Collision detection
+
+        // TODO: Check termination
+
+        // Adding enemies. Faster and faster, but not faster than MIN_FOE_TIME
+        if((gameTime - lastFoe) > MIN_FOE_TIME && Math.random() < (1 - Math.pow(.995, gameTime + 2))) {
+            lastFoe = gameTime;
+            console.log("Adding foe");
+            var x = Math.random() * (canvas.width - 2.0 * FOE_PADDING) + FOE_PADDING;
+            var y = Math.random() * (canvas.height - 2.0 * FOE_PADDING) + FOE_PADDING;
+            foes.push({pos: {x: x, y: y}});
+        }
     };
 
     // Render current game state
@@ -37,17 +65,27 @@ angular.module('cakeApp')
 
         var context = cvs.getContext('2d');
 
-        // Allways paint everything (to make things easy)
+        // Background (allways re-paint everything)
         context.drawImage(bgImg, 0, 0);
         
+        // Enemies
         for (var i = 0; i < foes.length; ++i) {
-            context.drawImage(foeImg,  foes[i].x - foeImg.width / 2.0,  foes[i].y - foeImg.height / 2.0);
+            var imgX = foes[i].pos.x - foeImg.width / 2.0;
+            var imgY = foes[i].pos.y - foeImg.height / 2.0;
+            context.drawImage(foeImg, imgX, imgY);
+        }
+
+        // Cakes
+        for (var i = 0; i < cakes.length; ++i) {
+            var imgX = cakes[i].pos.x - cakeImg.width / 2.0;
+            var imgY = cakes[i].pos.y - cakeImg.height / 2.0;
+            context.drawImage(cakeImg, imgX, imgY);
         }
 
         // Score
         context.font = '18pt Calibri';
         context.fillStyle = 'black';
-        context.fillText('State: ' + state, 10, 25);
+        context.fillText('Poäng: ' + score, 10, 25);
     };
 
     // The main game loop
@@ -72,7 +110,9 @@ angular.module('cakeApp')
     var click = function(x, y) {
         if (state !== 'running')
             return;
-        foes.push({'x': x, 'y': y});
+
+        // Enqueue for processing
+        clicks.push({x: x, y: y});
     };
 
     var getState = function() {
