@@ -33,7 +33,7 @@ angular.module('cakeApp')
             $scope.ctrlButton = 'Tillbaka';
             game.start(canvas);
         }
-        else if (game.state() === 'running') {
+        else if (game.state() === 'running' || game.state() === 'game over') {
             $scope.ctrlButton = 'Spela!';
             game.reset();
             context.fillStyle = 'white';

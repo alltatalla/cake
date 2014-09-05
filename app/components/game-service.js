@@ -4,7 +4,7 @@ angular.module('cakeApp')
   .service('game', function game() {
 
     // Initial state while resources are loading
-    // 'loading' -> 'idle' -> 'running' -> 'idle' | 'game over' | 'win' 
+    // 'loading' -> 'idle' -> 'running' -> 'idle' | 'game over'
     var state = 'loading';
     var foes, lastFoe;
     var cakes;
@@ -65,7 +65,7 @@ angular.module('cakeApp')
         var FOE_PADDING = 20; // px
         var MIN_FOE_TIME = 0.5; // s
         var COLLISION_DIST = 20; // px
-        var FOE_LIFETIME = 5;
+        var FOE_LIFETIME = 4.0;
         var CAKE_LIFETIME = 0.5;
 
         console.log('Update!');
@@ -101,7 +101,10 @@ angular.module('cakeApp')
             function(v) { return (gameTime - v.createdTime) > FOE_LIFETIME; },
             function(v) { power -= 1; });
 
-        // TODO: Check termination
+        // Check termination
+        if (power <= 0) {
+            state = 'game over';
+        }
 
         // Adding enemies. Faster and faster, but not faster than MIN_FOE_TIME
         if((gameTime - lastFoe) > MIN_FOE_TIME && Math.random() < (1 - Math.pow(.995, gameTime + 2))) {
@@ -120,11 +123,17 @@ angular.module('cakeApp')
 
     // Render current game state
     var render = function () {
+        var context = cvs.getContext('2d');
+
+        if (state === 'game over') {
+            var gameOverImg = resources.get('play/img/gameover.png');
+            context.drawImage(gameOverImg, 0, 0);
+            return;
+        }
+
         var bgImg = resources.get('play/img/bg.png');
         var foeImg = resources.get('play/img/foe.png');
         var cakeImg = resources.get('play/img/cake.png');
-
-        var context = cvs.getContext('2d');
 
         // Background (allways re-paint everything)
         context.drawImage(bgImg, 0, 0);
@@ -186,6 +195,7 @@ angular.module('cakeApp')
     // Load images
     resources.load([
         'play/img/bg.png',
+        'play/img/gameover.png',
         'play/img/cake.png',
         'play/img/foe.png'
     ]);
