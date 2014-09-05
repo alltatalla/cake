@@ -3,7 +3,7 @@
 angular.module('cakeApp')
   .controller('PlayCtrl', function ($scope, game) {
 
-    $scope.ctrlButton = 'Spela!';
+    $scope.ctrlButton = 'Spela';
 
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
@@ -34,7 +34,7 @@ angular.module('cakeApp')
         game.start(canvas);
       }
       else if (game.state() === 'running' || game.state() === 'game over') {
-        $scope.ctrlButton = 'Spela!';
+        $scope.ctrlButton = 'Spela';
         game.reset();
         context.fillStyle = 'white';
         context.fillRect(0, 0, canvas.width, canvas.height);
