@@ -65,8 +65,9 @@ angular.module('cakeApp')
         var FOE_PADDING = 20; // px
         var MIN_FOE_TIME = 0.5; // s
         var COLLISION_DIST = 20; // px
-        var FOE_LIFETIME = 4.0;
-        var CAKE_LIFETIME = 0.5;
+        var FOE_LIFETIME = 4.0; // s
+        var CAKE_LIFETIME = 0.5; // s
+        var FOE_CAKED_TIME = 0.5; // s
 
         console.log('Update!');
         gameTime += dt;
@@ -84,13 +85,16 @@ angular.module('cakeApp')
                     console.log('Collision');
                     cakes[ci].collision = true;
                     foes[fi].collision = true;
+                    foes[fi].collisionTime = gameTime;
                     score += 1;
                 }
             }
         }
 
         // Remove the colided objects
-        arrayRemoveIf(foes, function(v) { return v.collision === true; });
+        arrayRemoveIf(foes, function(v) { 
+            return v.collision === true && (gameTime - v.collisionTime) > FOE_CAKED_TIME; 
+        });
         arrayRemoveIf(cakes, function(v) { return v.collision === true; });
 
         // Remove old cakes
@@ -133,6 +137,7 @@ angular.module('cakeApp')
 
         var bgImg = resources.get('play/img/bg.png');
         var foeImg = resources.get('play/img/foe.png');
+        var foeCakedImg = resources.get('play/img/foe-caked.png');
         var cakeImg = resources.get('play/img/cake.png');
 
         // Background (allways re-paint everything)
@@ -142,7 +147,13 @@ angular.module('cakeApp')
         for (var i = 0; i < foes.length; ++i) {
             var imgX = foes[i].pos.x - foeImg.width / 2.0;
             var imgY = foes[i].pos.y - foeImg.height / 2.0;
-            context.drawImage(foeImg, imgX, imgY);
+            
+            if (foes[i].collision === true) {
+                context.drawImage(foeCakedImg, imgX, imgY);
+            }
+            else {
+                context.drawImage(foeImg, imgX, imgY);
+            }
         }
 
         // Cakes
@@ -197,6 +208,7 @@ angular.module('cakeApp')
         'play/img/bg.png',
         'play/img/gameover.png',
         'play/img/cake.png',
+        'play/img/foe-caked.png',
         'play/img/foe.png'
     ]);
     resources.onReady(function() { reset(); });
