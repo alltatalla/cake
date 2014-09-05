@@ -100,7 +100,7 @@ angular.module('cakeApp')
         }
       }
 
-      // Remove the colided objects
+      // Remove the collided objects
       arrayRemoveIf(foes, function(v) {
         return v.collision === true && (gameTime - v.collisionTime) > FOE_CAKED_TIME;
       });
