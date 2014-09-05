@@ -92,7 +92,7 @@ angular.module('cakeApp')
         }
 
         // Remove the colided objects
-        arrayRemoveIf(foes, function(v) { 
+        arrayRemoveIf(foes, function(v) {
             return v.collision === true && (gameTime - v.collisionTime) > FOE_CAKED_TIME; 
         });
         arrayRemoveIf(cakes, function(v) { return v.collision === true; });
@@ -112,14 +112,17 @@ angular.module('cakeApp')
 
         // Adding enemies. Faster and faster, but not faster than MIN_FOE_TIME
         if((gameTime - lastFoe) > MIN_FOE_TIME && Math.random() < (1 - Math.pow(.995, gameTime + 2))) {
+            var ENEMY_POS = [{x: 130, y: 262}, {x: 269, y: 248}, {x: 405, y: 248}, {x: 537, y: 262},
+            {x: 157, y: 191}, {x: 282, y: 177}, {x: 402, y: 177}, {x: 510, y: 191},
+            {x: 170, y: 136}, {x: 290, y: 123}, {x: 396, y: 123}, {x: 497, y: 136},
+            {x: 193, y: 91}, {x: 284, y: 77}, {x: 278, y: 77}, {x: 497, y: 91}];
+
             lastFoe = gameTime;
-            console.log("Adding foe");
-            var x = Math.random() * (canvas.width - 2.0 * FOE_PADDING) + FOE_PADDING;
-            var y = Math.random() * (canvas.height - 2.0 * FOE_PADDING) + FOE_PADDING;
-            var newPos = {x: x, y: y};
+            var i = Math.floor(Math.random() * ENEMY_POS.length);
+            var newPos = ENEMY_POS[i];
 
             // Don't add in the score text area and don't add on top of another foe
-            if ((x > 100 || y > 70) && !arrayCollision(foes, newPos, COLLISION_DIST)) {
+            if (!arrayCollision(foes, newPos, COLLISION_DIST)) {
                 foes.push({pos: newPos, createdTime: gameTime});
             }
         }
@@ -142,7 +145,7 @@ angular.module('cakeApp')
 
         // Background (allways re-paint everything)
         context.drawImage(bgImg, 0, 0);
-        
+
         // Enemies
         for (var i = 0; i < foes.length; ++i) {
             var imgX = foes[i].pos.x - foeImg.width / 2.0;
