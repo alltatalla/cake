@@ -175,7 +175,7 @@ angular.module('cakeApp')
         context.drawImage(gameOverImg, 0, 0);
 
         context.font = '18pt Calibri';
-        context.fillStyle = 'red';
+        context.fillStyle = 'black';
         context.fillText('GAME OVER', 240, 210);
         context.fillText('Poäng: ' + score.toString(), 270, 250);
         return;
