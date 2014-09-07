@@ -5,7 +5,19 @@ angular.module('cakeApp')
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
 
-    $scope.ctrlButton = 'Spela';
+    var stateObserver = function(state) {
+      if (state === 'idle' || state === 'game over') {
+        $scope.ctrlButton = 'Spela';
+      }
+      else if (state === 'running') {
+        $scope.ctrlButton = 'Tillbaka';
+      }
+      $scope.$apply();
+    };
+
+    $scope.ctrlButton = 'Loading Game';
+    game.regStateObserver(stateObserver);
+
     if (game.state() !== 'loading') {
       game.reset();
     }
@@ -19,9 +31,15 @@ angular.module('cakeApp')
     };
 
     canvas.addEventListener('mousedown', function(e) {
-      var mousePos = getMousePos(canvas, e);
-      console.log('Mouse Down! @' + mousePos.x + ';' + mousePos.y);
-      game.click(mousePos.x, mousePos.y);
+      if (game.state() === 'idle' || game.state() === 'game over') {
+        // Click canvas to start game
+        game.start(canvas);
+      }
+      else {
+        // In game, forward mouse events
+        var mousePos = getMousePos(canvas, e);
+        game.click(mousePos.x, mousePos.y);
+      }
     }, false);
 
     // Configure canvas
@@ -39,12 +57,10 @@ angular.module('cakeApp')
     }
 
     $scope.playCtrl = function() {
-      if (game.state() === 'idle') {
-        $scope.ctrlButton = 'Tillbaka';
+      if (game.state() === 'idle' || game.state() === 'game over') {
         game.start(canvas);
       }
-      else if (game.state() === 'running' || game.state() === 'game over') {
-        $scope.ctrlButton = 'Spela';
+      else if (game.state() === 'running') {
         game.reset();
         drawStartImg();
       }

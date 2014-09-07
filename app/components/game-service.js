@@ -12,10 +12,11 @@ angular.module('cakeApp')
     var lastTime, gameTime;
     var score, power;
     var cvs;
+    var stateObserver;
 
     // After loading resources. Transition to a ready state.
     var reset = function() {
-      state = 'idle';
+      setState('idle');
       foes = [];
       clicks = []; // unprocessed user input
       cakes = [];
@@ -30,8 +31,23 @@ angular.module('cakeApp')
     var start = function (canvas) {
       reset();
       cvs = canvas;
-      state = 'running';
+      setState('running');
       gameLoop();
+    };
+
+    var getState = function() {
+      return state;
+    };
+
+    var setState = function(s) {
+      state = s;
+      if (stateObserver !== undefined) {
+        stateObserver(state);
+      }
+    };
+
+    var regStateObserver = function(o) {
+      stateObserver = o;
     };
 
     var arrayRemoveIf = function(array, pred, onRemoved) {
@@ -127,7 +143,7 @@ angular.module('cakeApp')
 
       // Check termination
       if (power <= 0) {
-        state = 'game over';
+        setState('game over');
       }
 
       // Adding enemies. Faster and faster, but not faster than MIN_FOE_TIME
@@ -245,10 +261,6 @@ angular.module('cakeApp')
       clicks.push({x: x, y: y});
     };
 
-    var getState = function() {
-      return state;
-    };
-
     // Load images
     resources.load([
       'play/img/bg.png',
@@ -266,6 +278,7 @@ angular.module('cakeApp')
       start: start,
       reset: reset,
       state: getState,
+      regStateObserver: regStateObserver,
       click: click
     };
 
