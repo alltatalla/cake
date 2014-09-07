@@ -193,7 +193,7 @@ module.exports = function (grunt) {
           html: {
             steps: {
               js: ['concat', 'uglifyjs'],
-              css: ['cssmin']
+              css: ['concat', 'cssmin']
             },
             post: {}
           }
@@ -240,7 +240,6 @@ module.exports = function (grunt) {
       dist: {
         files: [{
           expand: true,
-          flatten: true,
           cwd: '<%= yeoman.app %>',
           src: '**/*.{png,jpg,jpeg,gif}',
           dest: '<%= yeoman.dist %>/images'
@@ -271,7 +270,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= yeoman.dist %>',
-          src: ['*.html', 'views/{,*/}*.html'],
+          src: ['**/*.html'],
           dest: '<%= yeoman.dist %>'
         }]
       }
@@ -302,8 +301,11 @@ module.exports = function (grunt) {
       dist: {
         options: {
           patterns: [{
-            match: /(\w+\/)*([\w-]+)\.png/g,
-            replacement: 'images/$2.png'
+            match: /((\w+\/)*([\w-]+))\.png/gm,
+            replacement: 'images/$1.png'
+          }, {
+            match: /(templateUrl:)"([-\w\/]*.tpl.html)"/gm,
+            replacement: '$1"templates/$2"'
           }]
         },
         files: [{
@@ -329,6 +331,11 @@ module.exports = function (grunt) {
           ]
         }, {
           expand: true,
+          cwd: '<%= yeoman.app %>',
+          src: '**/*.tpl.html',
+          dest: '<%= yeoman.dist %>/templates'
+        }, {
+          expand: true,
           cwd: '.tmp/images',
           dest: '<%= yeoman.dist %>/images',
           src: ['generated/*']
@@ -341,9 +348,10 @@ module.exports = function (grunt) {
       },
       styles: {
         expand: true,
-        cwd: '<%= yeoman.app %>/styles',
+        flatten: true,
+        cwd: '<%= yeoman.app %>',
         dest: '.tmp/styles/',
-        src: '{,*/}*.css'
+        src: '**/*.css'
       }
     },
 
