@@ -232,10 +232,9 @@ angular.module('cakeApp')
         var gameOverImg = resources.get('play/img/gameover.png');
         context.drawImage(gameOverImg, 0, 0);
 
-        context.font = '18pt Calibri';
+        context.font = 'bold 18pt Copperplate';
         context.fillStyle = 'black';
-        context.fillText('GAME OVER', 240, 210);
-        context.fillText('Poäng: ' + score.toString(), 270, 250);
+        context.fillText('Poäng: ' + score.toString(), 260, 460);
         return;
       }
 
@@ -247,12 +246,12 @@ angular.module('cakeApp')
       }
 
       // Score
-      context.font = '18pt Calibri';
+      context.font = 'bold 18pt Copperplate';
       context.fillStyle = 'black';
-      context.fillText('Poäng:', 10, 25);
-      context.fillText(score.toString(), 90, 25);
-      context.fillText('Kraft:', 10, 50);
-      context.fillText(power.toString(), 90, 50);
+      context.fillText('Poäng:', 340, 460);
+      context.fillText(score.toString(), 440, 460);
+      context.fillText('Kraft:', 180, 460);
+      context.fillText(power.toString(), 270, 460);
     };
 
     // The main game loop
