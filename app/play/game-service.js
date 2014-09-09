@@ -115,7 +115,7 @@ angular.module('cakeApp')
 
       // Foe strikes you
       for (var i = 0; i < foes.length; ++i) {
-        if (foes[i].collision !== true && foes[i].strike !== true &&
+        if (foes[i].type === 'foe' && foes[i].collision !== true && foes[i].strike !== true &&
             (gameTime - foes[i].createdTime) > FOE_LIFETIME) {
           foes[i].strike = true;
           power -= 1;
