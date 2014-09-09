@@ -186,9 +186,8 @@ angular.module('cakeApp')
 
       var bgImg = resources.get('play/img/bg.png');
       var catImg = resources.get('play/img/cat.png');
-      var catCakedImg = resources.get('play/img/cat-caked.png');
+      var cakedImg = resources.get('play/img/caked.png');
       var foeImg = resources.get('play/img/foe-borg.png');
-      var foeCakedImg = resources.get('play/img/foe-caked.png');
       var foeStrikeImg = resources.get('play/img/foe-strike.png');
       var cakeImg = resources.get('play/img/cake.png');
 
@@ -206,23 +205,19 @@ angular.module('cakeApp')
           var imgY = foes[i].pos.y - foeImg.height / 2.0;
 
           if (foes[i].type === 'foe') {
+            context.drawImage(foeImg, imgX, imgY);
             if (foes[i].strike === true) {
               context.drawImage(foeStrikeImg, imgX, imgY);
             }
             else if (foes[i].collision === true) {
-              context.drawImage(foeCakedImg, imgX, imgY);
-            }
-            else {
-              context.drawImage(foeImg, imgX, imgY);
+              context.drawImage(cakedImg, imgX, imgY);
             }
           }
           else if (foes[i].type === 'cat') {
+            context.drawImage(catImg, imgX, imgY);
             if (foes[i].collision === true) {
-              context.drawImage(catCakedImg, imgX, imgY);
+              context.drawImage(cakedImg, imgX, imgY);
             }
-            else {
-              context.drawImage(catImg, imgX, imgY);
-          }
           }
         }
       }
@@ -286,11 +281,10 @@ angular.module('cakeApp')
       'play/img/bg.png',
       'play/img/gameover.png',
       'play/img/cake.png',
-      'play/img/foe-caked.png',
+      'play/img/caked.png',
       'play/img/foe-strike.png',
       'play/img/foe-borg.png',
-      'play/img/cat.png',
-      'play/img/cat-caked.png'
+      'play/img/cat.png'
     ]);
     resources.onReady(function() { reset(); });
 
