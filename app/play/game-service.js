@@ -148,10 +148,24 @@ angular.module('cakeApp')
 
       // Adding enemies. Faster and faster, but not faster than MIN_FOE_TIME
       if((gameTime - lastFoe) > MIN_FOE_TIME && Math.random() < (1 - Math.pow(.995, gameTime + 2))) {
-        var ENEMY_POS = [{x: 130, y: 262}, {x: 269, y: 248}, {x: 405, y: 248}, {x: 537, y: 262},
-                         {x: 157, y: 191}, {x: 282, y: 177}, {x: 402, y: 177}, {x: 510, y: 191},
-                         {x: 170, y: 136}, {x: 290, y: 123}, {x: 396, y: 123}, {x: 497, y: 136},
-                         {x: 193, y: 91}, {x: 284, y: 77}, {x: 278, y: 77}, {x: 497, y: 91}];
+
+        var ENEMY_POS = [{x: 113, y: 370, z: 1},
+                         {x: 215, y: 366, z: 1},
+                         {x: 318, y: 365, z: 1},
+                         {x: 422, y: 366, z: 1},
+                         {x: 524, y: 370, z: 1},
+
+                         {x: 121, y: 323, z: 2},
+                         {x: 222, y: 320, z: 2},
+                         {x: 318, y: 319, z: 2},
+                         {x: 417, y: 320, z: 2},
+                         {x: 517, y: 323, z: 2},
+
+                         {x: 130, y: 288, z: 3},
+                         {x: 225, y: 286, z: 3},
+                         {x: 318, y: 285, z: 3},
+                         {x: 413, y: 286, z: 3},
+                         {x: 507, y: 288, z: 3}];
 
         lastFoe = gameTime;
         var i = Math.floor(Math.random() * ENEMY_POS.length);
@@ -184,7 +198,7 @@ angular.module('cakeApp')
       var bgImg = resources.get('play/img/bg.png');
       var catImg = resources.get('play/img/cat.png');
       var catCakedImg = resources.get('play/img/cat-caked.png');
-      var foeImg = resources.get('play/img/foe.png');
+      var foeImg = resources.get('play/img/foe-borg.png');
       var foeCakedImg = resources.get('play/img/foe-caked.png');
       var foeStrikeImg = resources.get('play/img/foe-strike.png');
       var cakeImg = resources.get('play/img/cake.png');
@@ -193,27 +207,33 @@ angular.module('cakeApp')
       context.drawImage(bgImg, 0, 0);
 
       // Enemies
-      for (var i = 0; i < foes.length; ++i) {
-        var imgX = foes[i].pos.x - foeImg.width / 2.0;
-        var imgY = foes[i].pos.y - foeImg.height / 2.0;
+      for (var z = 3; z > 0; --z) {
+        for (var i = 0; i < foes.length; ++i) {
+          if (foes[i].pos.z !== z) {
+            continue;
+          }
 
-        if (foes[i].type === 'foe') {
-          if (foes[i].strike === true) {
-            context.drawImage(foeStrikeImg, imgX, imgY);
+          var imgX = foes[i].pos.x - foeImg.width / 2.0;
+          var imgY = foes[i].pos.y - foeImg.height / 2.0;
+
+          if (foes[i].type === 'foe') {
+            if (foes[i].strike === true) {
+              context.drawImage(foeStrikeImg, imgX, imgY);
+            }
+            else if (foes[i].collision === true) {
+              context.drawImage(foeCakedImg, imgX, imgY);
+            }
+            else {
+              context.drawImage(foeImg, imgX, imgY);
+            }
           }
-          else if (foes[i].collision === true) {
-            context.drawImage(foeCakedImg, imgX, imgY);
+          else if (foes[i].type === 'cat') {
+            if (foes[i].collision === true) {
+              context.drawImage(catCakedImg, imgX, imgY);
+            }
+            else {
+              context.drawImage(catImg, imgX, imgY);
           }
-          else {
-            context.drawImage(foeImg, imgX, imgY);
-          }
-        }
-        else if (foes[i].type === 'cat') {
-          if (foes[i].collision === true) {
-            context.drawImage(catCakedImg, imgX, imgY);
-          }
-          else {
-            context.drawImage(catImg, imgX, imgY);
           }
         }
       }
@@ -268,7 +288,7 @@ angular.module('cakeApp')
       'play/img/cake.png',
       'play/img/foe-caked.png',
       'play/img/foe-strike.png',
-      'play/img/foe.png',
+      'play/img/foe-borg.png',
       'play/img/cat.png',
       'play/img/cat-caked.png'
     ]);
