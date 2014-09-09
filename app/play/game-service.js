@@ -184,17 +184,6 @@ angular.module('cakeApp')
     var render = function () {
       var context = cvs.getContext('2d');
 
-      if (state === 'game over') {
-        var gameOverImg = resources.get('play/img/gameover.png');
-        context.drawImage(gameOverImg, 0, 0);
-
-        context.font = '18pt Calibri';
-        context.fillStyle = 'black';
-        context.fillText('GAME OVER', 240, 210);
-        context.fillText('Poäng: ' + score.toString(), 270, 250);
-        return;
-      }
-
       var bgImg = resources.get('play/img/bg.png');
       var catImg = resources.get('play/img/cat.png');
       var catCakedImg = resources.get('play/img/cat-caked.png');
@@ -236,6 +225,18 @@ angular.module('cakeApp')
           }
           }
         }
+      }
+
+
+      if (state === 'game over') {
+        var gameOverImg = resources.get('play/img/gameover.png');
+        context.drawImage(gameOverImg, 0, 0);
+
+        context.font = '18pt Calibri';
+        context.fillStyle = 'black';
+        context.fillText('GAME OVER', 240, 210);
+        context.fillText('Poäng: ' + score.toString(), 270, 250);
+        return;
       }
 
       // Cakes
