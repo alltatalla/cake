@@ -7,8 +7,11 @@ angular.module('cakeApp')
     var scale = Math.min(1, window.innerWidth / 640, window.innerHeight / 480);
 
     var stateObserver = function(state) {
-      if (state === 'idle' || state === 'game over') {
+      if (state === 'idle') {
         $scope.ctrlButton = 'Spela';
+      }
+      else if (state === 'game over') {
+        $scope.ctrlButton = 'Spela Igen';
       }
       else if (state === 'running') {
         $scope.ctrlButton = 'Tillbaka';
@@ -32,7 +35,7 @@ angular.module('cakeApp')
     };
 
     canvas.addEventListener('mousedown', function(e) {
-      if (game.state() === 'idle' || game.state() === 'game over') {
+      if (game.state() === 'idle') {
         // Click canvas to start game
         game.start(canvas, scale);
       }
