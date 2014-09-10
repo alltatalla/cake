@@ -82,7 +82,7 @@ angular.module('cakeApp')
     var updateGameState = function (dt) {
       var FOE_PADDING = 20 * scale; // px
       var MIN_FOE_TIME = 0.5; // s
-      var COLLISION_DIST = 20 * scale; // px
+      var COLLISION_DIST = Math.max(15, 30 * scale); // px
       var CAT_LIFETIME = 4.0; // s
       var FOE_LIFETIME = 4.0; // s
       var FOE_STRIKE_TIME = 1.0; // s
