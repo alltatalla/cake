@@ -88,7 +88,7 @@ angular.module('cakeApp')
       var FOE_STRIKE_TIME = 1.0; // s
       var CAKE_LIFETIME = 0.5; // s
       var FOE_CAKED_TIME = 0.5; // s
-      var NO_FOE_IMGS = 2;
+      var NO_FOE_IMGS = 9;
 
       gameTime += dt;
 
@@ -211,11 +211,18 @@ angular.module('cakeApp')
       var catImg = resources.get('play/img/cat.png');
       var cakedImg = resources.get('play/img/caked.png');
       var foeImgs = [resources.get('play/img/foe-borg.png'),
-                     resources.get('play/img/foe-fredrik.png')];
+                     resources.get('play/img/foe-fredrik.png'),
+                     resources.get('play/img/foe-carl.png'),
+                     resources.get('play/img/foe-annie.png'),
+                     resources.get('play/img/foe-goran.png'),
+                     resources.get('play/img/foe-jan.png'),
+                     resources.get('play/img/foe-jimmie.png'),
+                     resources.get('play/img/foe-stefan.png'),
+                     resources.get('play/img/foe-jonas.png')];
       var strikeImg = resources.get('play/img/strike.png');
       var cakeImg = resources.get('play/img/cake.png');
 
-      // Background (allways re-paint everything)
+      // Background (always re-paint everything)
       drawImg(bgImg, 0, 0);
 
       // Enemies
@@ -311,6 +318,13 @@ angular.module('cakeApp')
       'play/img/strike.png',
       'play/img/foe-borg.png',
       'play/img/foe-fredrik.png',
+      'play/img/foe-carl.png',
+      'play/img/foe-annie.png',
+      'play/img/foe-goran.png',
+      'play/img/foe-jan.png',
+      'play/img/foe-jimmie.png',
+      'play/img/foe-stefan.png',
+      'play/img/foe-jonas.png',
       'play/img/cat.png'
     ]);
     resources.onReady(function() { reset(); });
@@ -322,5 +336,4 @@ angular.module('cakeApp')
       regStateObserver: regStateObserver,
       click: click
     };
-
   });
