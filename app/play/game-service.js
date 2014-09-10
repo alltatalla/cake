@@ -193,7 +193,7 @@ angular.module('cakeApp')
       var catImg = resources.get('play/img/cat.png');
       var cakedImg = resources.get('play/img/caked.png');
       var foeImg = resources.get('play/img/foe-borg.png');
-      var foeStrikeImg = resources.get('play/img/foe-strike.png');
+      var strikeImg = resources.get('play/img/strike.png');
       var cakeImg = resources.get('play/img/cake.png');
 
       // Background (allways re-paint everything)
@@ -212,7 +212,7 @@ angular.module('cakeApp')
           if (foes[i].type === 'foe') {
             context.drawImage(foeImg, imgX, imgY);
             if (foes[i].strike === true) {
-              context.drawImage(foeStrikeImg, imgX, imgY);
+              context.drawImage(strikeImg, imgX, imgY);
             }
             else if (foes[i].collision === true) {
               context.drawImage(cakedImg, imgX, imgY);
@@ -287,7 +287,7 @@ angular.module('cakeApp')
       'play/img/gameover.png',
       'play/img/cake.png',
       'play/img/caked.png',
-      'play/img/foe-strike.png',
+      'play/img/strike.png',
       'play/img/foe-borg.png',
       'play/img/cat.png'
     ]);
