@@ -88,7 +88,7 @@ angular.module('cakeApp')
       var FOE_STRIKE_TIME = 1.0; // s
       var CAKE_LIFETIME = 0.5; // s
       var FOE_CAKED_TIME = 0.5; // s
-      var NO_FOE_IMGS = 9;
+      var NO_FOE_IMGS = 11;
 
       gameTime += dt;
 
@@ -215,6 +215,8 @@ angular.module('cakeApp')
                      resources.get('play/img/foe-carl.png'),
                      resources.get('play/img/foe-annie.png'),
                      resources.get('play/img/foe-goran.png'),
+                     resources.get('play/img/foe-gustav.png'),
+                     resources.get('play/img/foe-romson.png'),
                      resources.get('play/img/foe-jan.png'),
                      resources.get('play/img/foe-jimmie.png'),
                      resources.get('play/img/foe-stefan.png'),
@@ -321,6 +323,8 @@ angular.module('cakeApp')
       'play/img/foe-carl.png',
       'play/img/foe-annie.png',
       'play/img/foe-goran.png',
+      'play/img/foe-gustav.png',
+      'play/img/foe-romson.png',
       'play/img/foe-jan.png',
       'play/img/foe-jimmie.png',
       'play/img/foe-stefan.png',
