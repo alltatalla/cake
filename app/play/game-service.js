@@ -100,15 +100,20 @@ angular.module('cakeApp')
         for (var fi = 0; fi < foes.length; ++fi) {
           if (collision(cakes[ci].pos, foes[fi].pos, COLLISION_DIST)) {
             console.log('Collision');
+
+            // Is this the first time we find a collission for this foe?
+            if (!foes[fi].collision) {
+              if (foes[fi].type === 'foe') {
+                score += 1;
+              }
+              else if (foes[fi].type === 'cat') {
+                score = Math.floor(score / 2);
+              }
+            }
+
             cakes[ci].collision = true;
             foes[fi].collision = true;
             foes[fi].collisionTime = gameTime;
-            if (foes[fi].type === 'foe') {
-              score += 1;
-            }
-            else if (foes[fi].type === 'cat') {
-              score = Math.floor(score / 2);
-            }
           }
         }
       }
