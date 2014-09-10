@@ -13,6 +13,7 @@ angular.module('cakeApp')
     var score, power;
     var cvs;
     var stateObserver;
+    var scale;
 
     // After loading resources. Transition to a ready state.
     var reset = function() {
@@ -28,9 +29,10 @@ angular.module('cakeApp')
     };
 
     // Start a new game (abandon any ongoing game)
-    var start = function (canvas) {
+    var start = function (canvas, scale_) {
       reset();
       cvs = canvas;
+      scale = scale_;
       setState('running');
       gameLoop();
     };
@@ -78,9 +80,9 @@ angular.module('cakeApp')
 
     // Game logic
     var updateGameState = function (dt) {
-      var FOE_PADDING = 20; // px
+      var FOE_PADDING = 20 * scale; // px
       var MIN_FOE_TIME = 0.5; // s
-      var COLLISION_DIST = 20; // px
+      var COLLISION_DIST = 20 * scale; // px
       var CAT_LIFETIME = 4.0; // s
       var FOE_LIFETIME = 4.0; // s
       var FOE_STRIKE_TIME = 1.0; // s
@@ -171,6 +173,10 @@ angular.module('cakeApp')
                          {x: 318, y: 285, z: 3},
                          {x: 413, y: 286, z: 3},
                          {x: 507, y: 288, z: 3}];
+        for (var i = 0; i < ENEMY_POS.length; ++i) {
+          ENEMY_POS[i].x *= scale;
+          ENEMY_POS[i].y *= scale;
+        }
 
         lastFoe = gameTime;
         var i = Math.floor(Math.random() * ENEMY_POS.length);
@@ -189,10 +195,15 @@ angular.module('cakeApp')
       }
     };
 
+    var drawImg = function(img, x, y) {
+      var context = cvs.getContext('2d');
+      context.drawImage(img, x, y, img.width * scale, img.height * scale);
+    };
+
     // Render current game state
     var render = function () {
-      var FOE_IMG_WIDTH = 64;
-      var FOE_IMG_HEIGHT = 64;
+      var FOE_IMG_WIDTH = 64 * scale;
+      var FOE_IMG_HEIGHT = 64 * scale;
 
       var context = cvs.getContext('2d');
 
@@ -205,7 +216,7 @@ angular.module('cakeApp')
       var cakeImg = resources.get('play/img/cake.png');
 
       // Background (allways re-paint everything)
-      context.drawImage(bgImg, 0, 0);
+      drawImg(bgImg, 0, 0);
 
       // Enemies
       for (var z = 3; z > 0; --z) {
@@ -219,18 +230,18 @@ angular.module('cakeApp')
 
           if (foes[i].type === 'foe') {
             var foeImg = foeImgs[foes[i].img];
-            context.drawImage(foeImg, imgX, imgY);
+            drawImg(foeImg, imgX, imgY);
             if (foes[i].strike === true) {
-              context.drawImage(strikeImg, imgX, imgY);
+              drawImg(strikeImg, imgX, imgY);
             }
             else if (foes[i].collision === true) {
-              context.drawImage(cakedImg, imgX, imgY);
+              drawImg(cakedImg, imgX, imgY);
             }
           }
           else if (foes[i].type === 'cat') {
-            context.drawImage(catImg, imgX, imgY);
+            drawImg(catImg, imgX, imgY);
             if (foes[i].collision === true) {
-              context.drawImage(cakedImg, imgX, imgY);
+              drawImg(cakedImg, imgX, imgY);
             }
           }
         }
@@ -239,7 +250,7 @@ angular.module('cakeApp')
 
       if (state === 'game over') {
         var gameOverImg = resources.get('play/img/gameover.png');
-        context.drawImage(gameOverImg, 0, 0);
+        drawImg(gameOverImg, 0, 0);
 
         context.font = 'bold 18pt Copperplate';
         context.fillStyle = 'black';
@@ -251,16 +262,17 @@ angular.module('cakeApp')
       for (var i = 0; i < cakes.length; ++i) {
         var imgX = cakes[i].pos.x - cakeImg.width / 2.0;
         var imgY = cakes[i].pos.y - cakeImg.height / 2.0;
-        context.drawImage(cakeImg, imgX, imgY);
+        drawImg(cakeImg, imgX, imgY);
       }
 
       // Score
-      context.font = 'bold 18pt Copperplate';
+      var fontSize = Math.round(18 * scale);
+      context.font = 'bold ' + fontSize + 'pt Copperplate';
       context.fillStyle = 'black';
-      context.fillText('Poäng:', 340, 460);
-      context.fillText(score.toString(), 440, 460);
-      context.fillText('Kraft:', 180, 460);
-      context.fillText(power.toString(), 270, 460);
+      context.fillText('Poäng:', 340 * scale, 460 * scale);
+      context.fillText(score.toString(), 440 * scale, 460 * scale);
+      context.fillText('Kraft:', 180 * scale, 460 * scale);
+      context.fillText(power.toString(), 270 * scale, 460 * scale);
     };
 
     // The main game loop

@@ -4,6 +4,7 @@ angular.module('cakeApp')
   .controller('PlayCtrl', function ($scope, game) {
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
+    var scale = Math.min(1, window.innerWidth / 640, window.innerHeight / 480);
 
     var stateObserver = function(state) {
       if (state === 'idle' || state === 'game over') {
@@ -33,7 +34,7 @@ angular.module('cakeApp')
     canvas.addEventListener('mousedown', function(e) {
       if (game.state() === 'idle' || game.state() === 'game over') {
         // Click canvas to start game
-        game.start(canvas);
+        game.start(canvas, scale);
       }
       else {
         // In game, forward mouse events
@@ -43,8 +44,8 @@ angular.module('cakeApp')
     }, false);
 
     // Configure canvas
-    canvas.width = 640;
-    canvas.height = 480;
+    canvas.width = 640 * scale;
+    canvas.height = 480 * scale;
     context.globalAlpha = 1.0;
     context.beginPath();
 
@@ -53,12 +54,12 @@ angular.module('cakeApp')
     img.onload = function() { drawStartImg(); };
     img.src = 'play/img/start.png';
     var drawStartImg = function() {
-      context.drawImage(img, 0, 0);
+      context.drawImage(img, 0, 0, img.width * scale, img.height * scale);
     }
 
     $scope.playCtrl = function() {
       if (game.state() === 'idle' || game.state() === 'game over') {
-        game.start(canvas);
+        game.start(canvas, scale);
       }
       else if (game.state() === 'running') {
         game.reset();
