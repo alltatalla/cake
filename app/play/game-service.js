@@ -86,6 +86,7 @@ angular.module('cakeApp')
       var FOE_STRIKE_TIME = 1.0; // s
       var CAKE_LIFETIME = 0.5; // s
       var FOE_CAKED_TIME = 0.5; // s
+      var NO_FOE_IMGS = 2;
 
       gameTime += dt;
 
@@ -99,7 +100,6 @@ angular.module('cakeApp')
       for (var ci = 0; ci < cakes.length; ++ci) {
         for (var fi = 0; fi < foes.length; ++fi) {
           if (collision(cakes[ci].pos, foes[fi].pos, COLLISION_DIST)) {
-            console.log('Collision');
 
             // Is this the first time we find a collission for this foe?
             if (!foes[fi].collision) {
@@ -178,21 +178,29 @@ angular.module('cakeApp')
 
         var type = Math.random() < 0.1 ? 'cat' : 'foe';
 
+        if (type === 'foe') {
+          var foeImg = Math.floor(Math.random() * NO_FOE_IMGS);
+        }
+
         // Don't add in the score text area and don't add on top of another foe
         if (!arrayCollision(foes, newPos, COLLISION_DIST)) {
-          foes.push({pos: newPos, createdTime: gameTime, type: type});
+          foes.push({pos: newPos, createdTime: gameTime, type: type, img: foeImg});
         }
       }
     };
 
     // Render current game state
     var render = function () {
+      var FOE_IMG_WIDTH = 64;
+      var FOE_IMG_HEIGHT = 64;
+
       var context = cvs.getContext('2d');
 
       var bgImg = resources.get('play/img/bg.png');
       var catImg = resources.get('play/img/cat.png');
       var cakedImg = resources.get('play/img/caked.png');
-      var foeImg = resources.get('play/img/foe-borg.png');
+      var foeImgs = [resources.get('play/img/foe-borg.png'),
+                     resources.get('play/img/foe-fredrik.png')];
       var strikeImg = resources.get('play/img/strike.png');
       var cakeImg = resources.get('play/img/cake.png');
 
@@ -206,10 +214,11 @@ angular.module('cakeApp')
             continue;
           }
 
-          var imgX = foes[i].pos.x - foeImg.width / 2.0;
-          var imgY = foes[i].pos.y - foeImg.height / 2.0;
+          var imgX = foes[i].pos.x - FOE_IMG_WIDTH / 2.0;
+          var imgY = foes[i].pos.y - FOE_IMG_HEIGHT / 2.0;
 
           if (foes[i].type === 'foe') {
+            var foeImg = foeImgs[foes[i].img];
             context.drawImage(foeImg, imgX, imgY);
             if (foes[i].strike === true) {
               context.drawImage(strikeImg, imgX, imgY);
@@ -289,6 +298,7 @@ angular.module('cakeApp')
       'play/img/caked.png',
       'play/img/strike.png',
       'play/img/foe-borg.png',
+      'play/img/foe-fredrik.png',
       'play/img/cat.png'
     ]);
     resources.onReady(function() { reset(); });
